@@ -1,25 +1,27 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>My Samsung S8 Server</title>
-</head>
 <body>
-    <h1>My Tablet Project</h1>
-    <div id="response">Waiting for tablet...</div>
+    <h1>S8 Tablet Server</h1>
+    <input type="text" id="userMsg" placeholder="Type a message...">
+    <button onclick="sendToTablet()">Send to Tablet</button>
+    <p id="status"></p>
 
     <script>
-        // Replace the old URL with your new Cloudflare one
-        const TABLET_API_URL = 'https://neon-silly-cottages-checks.trycloudflare.com/data'; 
+        // MUST USE YOUR CURRENT CLOUDFLARE URL HERE
+        const API_BASE = 'https://neon-silly-cottages-checks.trycloudflare.com';
 
-        fetch(TABLET_API_URL)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('response').innerText = data.message;
+        function sendToTablet() {
+            const msg = document.getElementById('userMsg').value;
+            fetch(`${API_BASE}/save`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: msg})
             })
-            .catch(err => {
-                document.getElementById('response').innerText = "Error connecting to S8 Tablet";
-                console.error(err);
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('status').innerText = "Saved: " + data.saved;
             });
-    </scrpt>
+        }
+    </script>
 </body>
-</html
+</html>
