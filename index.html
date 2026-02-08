@@ -8,16 +8,16 @@
     <div id="response">Waiting for tablet...</div>
 
     <script>
-        // Replace with your Tablet's IP address
-        const TABLET_IP = 'https://neon-silly-cottages-checks.trycloudflare.com/data'; 
+        // Replace the old URL with your new Cloudflare one
+        const TABLET_API_URL = 'https://neon-silly-cottages-checks.trycloudflare.com/data'; 
 
-        fetch(TABLET_IP)
+        fetch(TABLET_API_URL)
             .then(response => response.json())
             .then(data => {
                 document.getElementById('response').innerText = data.message;
             })
             .catch(err => {
-                document.getElementById('response').innerText = "Tablet is offline";
+                document.getElementById('response').innerText = "Error connecting to S8 Tablet";
                 console.error(err);
             });
     </scrpt>
