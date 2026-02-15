@@ -1,26 +1,65 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <title>My S8+ Tablet Server</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #121212; color: white; }
+        input { padding: 10px; width: 250px; border-radius: 5px; border: none; }
+        button { padding: 10px 20px;cursor: pointer; background: #007bff; color: white; border: none; border-radius:5px; }
+        ul {
+            background: #1e1e1e;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+            font-family: monospace;
+        }
+    </style>
+</head>
 <body>
-    <h1>S8 Tablet Server</h1>
-    <input type="text" id="userMsg" placeholder="Type a message...">
-    <button onclick="sendToTablet()">Send to Tablet</button>
-    <p id="status"></p>
+    <h1>S8+ Message Hub</h1>
+    <input type="text" id="msgInput" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+    <button onclick="clearAll()" style="background: #dc3545;">Clear History</button>
+
+    <h3>Message History</h3>
+    <ul id="messageList"></ul>
 
     <script>
-        // MUST USE YOUR CURRENT CLOUDFLARE URL HERE
-        const API_BASE = 'https://talented-anticipated-expired-ferrari.trycloudflare';
+        // Function to fetch messages and display them
+        async function loadMessages() {
+            const response = await fetch('messages');
+            const data = await response.json();
+            const list = document.getElementById('messageList');
+            
+            list.innerHTML = ''; // Clear current list
+            
+            data.messages.forEach(msg => {
+                const li = document.createElement('li');
+                li.textContent = msg;
+                list.appendChild(li);
+            });
+        }
 
-        function sendToTablet() {
-            const msg = document.getElementById('userMsg').value;
-            fetch(`${API_BASE}/save`, {
+        async function sendMessage() {
+            const msg = document.getElementById('msgInput').value;
+            await fetch(`/save`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({message: msg})
             })
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('status').innerText = "Saved: " + data.saved;
-            });
+            document.getElementById('msgInput')value = '';
+            loadMessages(); // Refresh the list after sending
+        }
+        
+        // Load the messages when the page first opens
+        loadMessages();
+        
+        async function clearAll() {
+            if (confirm("Are you sure you want to delete all messages?")) {
+                await fetch('/clear`, { method: 'POST' });
+                loadMessages(); // Refresh the list
+            }
         }
     </script>
 </body>
