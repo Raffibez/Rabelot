@@ -312,4 +312,17 @@ button {
     line-height: 1em; color: black;
 }
 
+li {
+    list-style: none;
+    padding: 8px;
+    border-bottom: 1px solid #333;
+}
+/* This makes the [Time] and (.IP) look subtle */
+.meta {
+    color: #888;
+    font-size: 0.85em;
+    margin-right: 10px;
+}
+
+
 .bid-btn.diamonds, .bid-btn.hearts { color: #ff4757; border-color: #ff4757; }
