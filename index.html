@@ -26,41 +26,46 @@
     <ul id="messageList"></ul>
 
     <script>
-        // Function to fetch messages and display them
         async function loadMessages() {
-            const response = await fetch('messages');
-            const data = await response.json();
-            const list = document.getElementById('messageList');
-            
-            list.innerHTML = ''; // Clear current list
-            
-            data.messages.forEach(msg => {
-                const li = document.createElement('li');
-                li.textContent = msg;
-                list.appendChild(li);
-            });
+            try {
+                const response = await fetch('/messages');
+                const data = await response.json();
+                const list = document.getElementById('messageList');
+                list.innerHTML = ''; 
+                
+                data.messages.forEach(msg => {
+                    const li = document.createElement('li');
+                    li.textContent = msg;
+                    list.appendChild(li);
+                });
+            } catch (err) {
+                console.error("Could not load messages:", err);
+            }
         }
 
         async function sendMessage() {
-            const msg = document.getElementById('msgInput').value;
+            const input = document.getElementById('msgInput');
+            const msg = input.value;
+            if (!msg) return;
+
             await fetch(`/save`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({message: msg})
-            })
-            document.getElementById('msgInput').value = '';
-            loadMessages(); // Refresh the list after sending
+            });
+            
+            input.value = ''; // Corrected .value
+            loadMessages(); 
         }
-        
-        // Load the messages when the page first opens
-        loadMessages();
         
         async function clearAll() {
             if (confirm("Are you sure you want to delete all messages?")) {
-                await fetch('/clear`, { method: 'POST' });`
-                loadMessages(); // Refresh the list
+                await fetch('/clear', { method: 'POST' }); // Corrected quotes
+                loadMessages();
             }
         }
+
+        loadMessages();
     </script>
 </body>
 </html>
