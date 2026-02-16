@@ -31,13 +31,14 @@ def save_message():
     if message:
         with open(MESSAGES_FILE, "a") as f:
             f.write(message + "\n")
-        return jsonify({"status": "error"}), 400
+        return jsonify({"status": "success"}), 201
+    return jsonify({"status": "error"}), 400
 
 @app.route('/clear', methods=['POST'])
 def clear_messages():
     with open(MESSAGE_FILE, "w") as f:
         f.write("")
-    return jsonify{"status": "cleared"})m 200   
+    return jsonify{"status": "cleared"}), 200   
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=True)
