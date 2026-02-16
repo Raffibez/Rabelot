@@ -1,42 +1,43 @@
-from flask import Flask, jsonify, request, render_template
-from flask_cors import CORS
-from datetime import  datetime 
+import os
+from flask import Flask, jsonify, request, render_template_string
 
 app = Flask(__name__)
-CORS(app) # This allows GitHub to talk to your tablet
+MESSAGE_FILE = "message.txt"
+
+# Ensure the messages file exists
+if not os.path.exists(MESSAGE_FILE):
+    with open(MESSAGE_FILE, "w") as f:
+        f.write("")
+
+# Put your Corrected HTML Template here
+HTML_TEMPLATE = """
+[Paste the Corrected HTML/JS from my previous response here]
+"""
 
 @app.route('/')
-def home():
-    return render_template('index.html')
+def index():
+    return render_template_string(HTML_TEMPLATE)
+
+@app.route("/messages", methods=["GET"])
+def get_messages():
+    with open(MESSAGES_FILE, "r") as f:
+        lines = f.readlines()
+    return jsonify({"messages": [line.strip() for line in lines]})
 
 @app.route('/save', methods=['POST'])
 def save_message():
-    user_data = request.json
-    msg = user_data.get("message", "No message")
-
-    #Create a timestamp (e.g., 2026-02-09 01:55:01)
-    timestamp = datetime.now().srftime("%Y-$m-%d %H:%M:%S")
-    entry = f"[{timestamp}] {msg}
-
-    with open("messages.txt", "a") as f:
-        f.write(msg + "\n")
-
-    return jsonify({"status": "succes", "saved": entry})
-
-@app.route('/messages', methods=['GET'])
-def get_message():
-    try:
-        with open(messages.txt", "r") as f:
-            messages = [line.strip() for line in f.readlines()]
-        return jsonify{"messages": messages})
-    except FileNotFoundError
-        return jsonify{"messages": messages})
+    data = request.json
+    message = data.get("message")
+    if message:
+        with open(MESSAGES_FILE, "a") as f:
+            f.write(message + "\n")
+        return jsonify({"status": "error"}), 400
 
 @app.route('/clear', methods=['POST'])
 def clear_messages():
-    with open(messages.txt", "w") as f:
+    with open(MESSAGE_FILE, "w") as f:
         f.write("")
-    return jsonify{"status": "File Cleared"})   
+    return jsonify{"status": "cleared"})m 200   
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=8000, debug=True)
