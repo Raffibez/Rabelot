@@ -18,15 +18,25 @@ def load_history():
 def index():
     return render_template_string(HTML_TEMPLATE)
 
+from datetime import datetime
+from flask import request
+
 @socketio.on("send_message")
 def handle_message(data):
-    msg = data.get("message")
-    if msg:
-        # Save to file for persistence
+    msg_text = data.get("message")
+    if msg_text:
+        # Create timestamp and get sender IP
+        timestamp = datetime.now().strftime("%H:%M")
+        sender_ip = request.remote_addr.split('.')[-1] # Just the last part (e.g., .71)
+        
+        full_message = f"[{timestamp}] (.{sender_ip}) {msg_text}"
+        
+        # Save to file
         with open(MESSAGES_FILE, "a") as f:
-            f.write(msg + "\n")
-        # Broadcast to EVERYONE connected
-        emit("new_message", {"message": msg}, broadcast=True)
+            f.write(full_message + "\n")
+            
+        # Broadcast the formatted message
+        emit("new_message", {"message": full_message}, broadcast=True)
 
 @socketio.on("clear_history")
 def handle_clear():
