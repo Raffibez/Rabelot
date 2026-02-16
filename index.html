@@ -48,11 +48,21 @@
 
         function addMessageToList(msg) {
             const li = document.createElement('li');
-            li.textContent = msg;
+    
+            // If the message contains our bracketed timestamp, style it
+            if (msg.startsWith('[')) {
+                const parts = msg.split(') ');
+                const meta = parts[0] + ')';
+                const text = parts[1];
+                li.innerHTML = `<span class="meta">${meta}</span> ${text}`;
+            } else {
+                li.textContent = msg;
+            }
+    
             list.appendChild(li);
-            // Auto-scroll to bottom      
             window.scrollTo(0, document.body.scrollHeight);
         }
+
 
         function sendMessage() {
             const input = document.getElementById('msgInput');
