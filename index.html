@@ -24,48 +24,49 @@
 
     <h3>Message History</h3>
     <ul id="messageList"></ul>
-
+    
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script>
-        async function loadMessages() {
-            try {
-                const response = await fetch('/messages');
-                const data = await response.json();
-                const list = document.getElementById('messageList');
-                list.innerHTML = ''; 
-                
-                data.messages.forEach(msg => {
-                    const li = document.createElement('li');
-                    li.textContent = msg;
-                    list.appendChild(li);
-                });
-            } catch (err) {
-                console.error("Could not load messages:", err);
-            }
+        const socket = io();
+        const list = document.getElementById('messageList');
+
+        // 1. Receive full history on connection
+        socket.on("load_history", (data) => {
+            list.innerHTML = '';
+            data.messages.forEach(msg => addMessageToList(msg));
+        });
+
+        // 2. Receive a single new message in real-time
+        socket.on("new_message", (data) => {
+            addMessageToList(data.message);
+        });
+
+        // 3. Clear UI when someone clears history
+        socket.on("history_cleared", () => {
+            list.innerHTML = '';
+        });
+
+        function addMessageToList(msg) {
+            const li = document.createElement('li');
+            li.textContent = msg;
+            list.appendChild(li);
+            // Auto-scroll to bottom      
+            window.scrollTo(0, document.body.scrollHeight);
         }
 
-        async function sendMessage() {
+        function sendMessage() {
             const input = document.getElementById('msgInput');
-            const msg = input.value;
-            if (!msg) return;
-
-            await fetch(`/save`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: msg})
-            });
-            
-            input.value = ''; // Corrected .value
-            loadMessages(); 
-        }
-        
-        async function clearAll() {
-            if (confirm("Are you sure you want to delete all messages?")) {
-                await fetch('/clear', { method: 'POST' }); // Corrected quotes
-                loadMessages();
+            if (input.value) {                   
+                socket.emit("send_message", {message: input.value});
+                input.value = '';
             }
         }
 
-        loadMessages();
+        function clearAll() {
+            if (confirm("Delete all messages for everyone?")) {
+                socket.emit("clear_history");
+            }
+        }
     </script>
 </body>
 </html>
