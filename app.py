@@ -1,3 +1,7 @@
+from flask import Flask, render_template_string, request
+from flask_socketio import SocketIO, emit
+from datetime import datetime
+
 import os
 # Get the directory where the script is located
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -7,11 +11,6 @@ app = Flask(
     static_folder=os.path.join(base_dir, "static"),
     static_url_path="/static"
 )
-
-
-from flask import Flask, render_template_string, request
-from flask_socketio import SocketIO, emit
-from datetime import datetime 
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
