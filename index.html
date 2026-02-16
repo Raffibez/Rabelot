@@ -48,7 +48,7 @@
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({message: msg})
             })
-            document.getElementById('msgInput')value = '';
+            document.getElementById('msgInput').value = '';
             loadMessages(); // Refresh the list after sending
         }
         
@@ -57,7 +57,7 @@
         
         async function clearAll() {
             if (confirm("Are you sure you want to delete all messages?")) {
-                await fetch('/clear`, { method: 'POST' });
+                await fetch('/clear`, { method: 'POST' });`
                 loadMessages(); // Refresh the list
             }
         }
